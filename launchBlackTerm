@@ -1,0 +1,5 @@
+#! /bin/bash
+
+urxvt -name "blackterm" -xrm "*background: #222222" -xrm "*foreground: #eeeeee" -xrm "*geometry: 60x12" &
+
+#i3-msg "[instance=blackterm] move scratchpad"

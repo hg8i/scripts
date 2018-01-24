@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ $# -gt 1 ]; then 
+  cmd=${@:2}
+  loopNum=$1
+  echo $cmd
+  echo $loopNum
+  while [ $loopNum -gt 0 ]; do 
+    let loopNum-=1
+    echo "repeating" 
+    eval $cmd
+  done
+fi
+  

@@ -1,0 +1,17 @@
+#!/bin/bash
+#compiles pdflatex, then links pdf to mySlides's directory
+
+filename=${1%.*}
+currentDir=$(basename $(pwd))
+myPdfsPath="/home/prime/pdfs/mySlides/"
+copyToName=${myPdfsPath}${currentDir}-${filename}.pdf
+copyFromName=${filename}.pdf
+
+#compile pdf
+pdflatex $1
+
+echo "Making copy to slides directory:"
+echo $copyToName
+#evince can't follow symlinks, so copy instead
+#ln -s $copyFromName $copyToName
+cp $copyFromName $copyToName

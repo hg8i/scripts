@@ -1,0 +1,35 @@
+#!/usr/bin/python2
+
+from __future__ import division
+from math import *
+import os
+import sys
+
+ans=0
+rows, columns = os.popen('stty size', 'r').read().split()
+
+def ansPrint(s):
+  s="\n"+" "*(int(columns)-len(s))+s+"\n"
+  print s
+
+
+def do(run):
+  try:
+    exec("ans={0}".format(run))
+    globals().update(locals())
+    ansPrint("{1} = {0}".format(ans,run))
+  except:
+    ansPrint("error")
+
+if len(sys.argv)<2:
+  while True:
+    run=raw_input("Entry: ")
+    if run=="q": quit()
+    do(run)
+ 
+else:
+  run="".join(sys.argv[1:])
+  do(run)
+
+
+

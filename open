@@ -1,0 +1,20 @@
+#! /bin/bash
+#tool for opening more windows in same path
+#works with wildcard
+#Aaron White, 2017
+
+#get full path
+if [ $# -eq 0 ]
+then
+  paths="$(readlink -f ./)"
+elif [ $# -eq 1 ]
+then
+  paths="$(readlink -f $@)"
+else 
+  paths="$(readlink -f $@)"
+fi
+
+#create windows
+for path in $paths; do
+  urxvt -e bash -c "cd $path ; bash" &
+done

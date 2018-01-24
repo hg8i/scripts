@@ -1,0 +1,31 @@
+#!/bin/bash
+#script for navigating extra workspaces
+#launch a workspace and move container:
+#  workspace <name>
+#also, jump to new workspace:
+#  workspace -n <name>
+
+#select workspace, option name
+if [ $# -eq 1 ]
+then
+  #move all to named workspace
+  newWorkspaceName=${1}
+  i3-msg "focus parent"
+  i3-msg "move container to workspace ${newWorkspaceName}"
+elif [ $# -eq 2 ]
+then 
+  #jump to named workspace
+  option=$1
+  newWorkspaceName=${2}
+  if [ $option == "-1" ]
+  then 
+    i3-msg "[con_mark=_last] focus"
+    i3-msg "move container to workspace ${newWorkspaceName}"
+  elif [ $option == "-n" ]
+  then
+    i3-msg "workspace ${newWorkspaceName}"
+  fi
+fi
+
+  
+

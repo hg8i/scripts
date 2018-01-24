@@ -1,0 +1,6 @@
+#!/bin/bash
+# this wraper changes the terminal color scheme so the cursor is visible
+printf '\033]10;red\007'
+vifm $@
+printf '\033]10;black\007'
+

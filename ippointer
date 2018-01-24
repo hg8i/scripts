@@ -1,0 +1,9 @@
+#!/usr/bin/python2
+import urllib
+
+def upload(name):
+	print "updating", name
+	url="http://hg8i.com/ippointer/?pass=4&set={0}"
+	urllib.urlopen(url.format(name))
+
+upload("decorum")

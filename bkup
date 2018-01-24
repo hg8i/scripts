@@ -1,0 +1,23 @@
+# This script makes a backup of all matching files
+# Syntax: bkup FILE, bkup PATTERN
+# Bakups are ignored, conflicts resolved with counter
+# Aaron White 2017
+
+
+for f in "$@"; do
+  ext=${f##*.}
+  name=${f%.*}
+  if [ ! ${ext} = "bkup" ]; then
+    if [ ! -e ${f}.bkup ]; then
+      cp -r $f ${f}.bkup
+    else
+      count=1
+      while [ -a ${f}.${count}.bkup ]; do
+        ((count++))
+      done
+      cp -r $f ${f}.${count}.bkup
+    fi
+  fi
+done
+
+

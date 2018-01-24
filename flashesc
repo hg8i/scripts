@@ -1,0 +1,7 @@
+#!/bin/bash
+#flashes escape key for 1/2 sec
+
+/home/prime/scripts/leds.sh off esc
+/home/prime/scripts/leds.sh on esc
+sleep 0.25 
+/home/prime/scripts/leds.sh off esc 

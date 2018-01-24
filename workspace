@@ -1,0 +1,108 @@
+#!/usr/bin/python2
+
+#rename all workspaces starting with a number N to A:N where A is an argument 
+
+import os, sys, pickle
+
+def getWorkspaceNames():
+  #get list of current workspace names
+  f=os.popen("i3-msg -t get_workspaces").read()
+  false=False
+  true=True
+  data=eval(f)
+  names=[x["name"] for x in data]
+  return names
+
+def changeNameFromTo(fromToList):
+  # change name from fromList to toList
+  labelCommand="i3-msg rename workspace {0} to {1}"
+  for i, pair in enumerate(fromToList):
+    cmd=labelCommand.format(pair[0],pair[1])
+    os.popen(cmd)
+    print cmd
+  savePickle(fromToList)
+
+def changeWorkspaces(names,label1,label2):
+  #change workspaces matching label1 to label2
+  fromToList=[]
+  for name in names:
+    if label1+":" not in name: continue
+    baseName=name[name.rfind(":")+1:]
+    fromToList.append([name,"{0}:{1}".format(label2,baseName)])
+  changeNameFromTo(fromToList)
+
+
+def labelWorkspaces(names,label):
+  #label workspaces starting with number
+  fromToList=[]
+  for name in names:
+    if name[0]!=":": continue
+    # try: int(name[1:]) 
+    # except: continue
+    fromToList.append([name,"{0}{1}".format(label,name)])
+  changeNameFromTo(fromToList)
+
+def unlabelWorkspaces(names,label):
+  #remove label from workspaces matching with label
+  fromToList=[]
+  for name in names:
+    if label+":" not in name: continue
+    fromToList.append([name,name[name.find(":"):]])
+  changeNameFromTo(fromToList)
+
+def undoCommands():
+  #undo last commands
+  fromToList=safeLoadPickle()
+  for i in range(len(fromToList)):
+    fromToList[i].reverse()
+  print fromToList
+  changeNameFromTo(fromToList)
+
+def killWorkspace(names,label):
+  #kill workspaces with label in name
+  killstring='i3-msg "[workspace={0}] kill"; '
+  fullKillstring=""
+  for name in names:
+    if label+":" not in name: continue
+    fullKillstring+=killstring.format(name)
+  os.popen(fullKillstring)
+
+
+########################################
+# pickle commands
+def savePickle(fromToList):
+  #save pickle list 
+  pickle.dump(fromToList,open(resourcePath,"w"))
+#
+def safeLoadPickle():
+  try: return pickle.load(open(resourcePath,"r"))
+  except: return []
+########################################
+
+
+print '"u" for unlabel, "l" for label'
+mode=sys.argv[1]
+label2=""
+if len(sys.argv)>2: label=sys.argv[2]
+if len(sys.argv)>3: label2=sys.argv[3]
+names=getWorkspaceNames()
+resourcePath="/home/prime/resources/renameWorkspaces.pickle"
+
+if mode=="label" or mode=="l":
+  #label workspaces starting with number
+  labelWorkspaces(names,label)
+elif mode=="unlabel" or mode=="u":
+  #remove label from workspaces matching label
+  unlabelWorkspaces(names,label)
+elif mode=="change" or mode=="c":
+  #change workspaces matching label to label2
+  changeWorkspaces(names, label, label2)
+elif mode=="kill" or mode=="k":
+  #kill all workspaces matching label
+  killWorkspace(names,label)
+elif mode=="undo" or mode=="z":
+  #undo last commands issued
+  undoCommands()
+
+
+

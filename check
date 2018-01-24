@@ -1,0 +1,3 @@
+#!/bin/bash
+/home/prime/scripts/flashesc
+echo $(date) > /home/prime/a

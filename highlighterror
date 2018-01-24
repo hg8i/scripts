@@ -1,0 +1,41 @@
+#! /bin/python2.7
+
+import sys
+import subprocess
+import re
+
+def preProcess():
+  if len(sys.argv) < 2:
+    print "no args"
+    quit()
+  
+  if sys.argv[1][0] == "-":
+    mode = sys.argv[1][1:]
+    execString=" ".join(sys.argv[2:])
+    execList=sys.argv[2:]
+  else:
+    mode = "none";
+    execString=" ".join(sys.argv[1:])
+    execList=sys.argv[1:]
+  
+  print mode
+  print execString
+  print execList
+  
+  proc = subprocess.Popen(execList, shell=True, stdout=subprocess.PIPE)
+
+  return mode, proc
+
+def processError(proc):
+  print "highlighting lines with error in them"
+  repError="\033[43m\033[31m {0} \033[39m\033[49m".format("error")
+  for line in iter(proc.stdout.readline,''):
+    line=re.sub(r'error', repError,line,flags=re.IGNORECASE)
+    print line
+
+mode, proc = preProcess();
+
+if mode=="error":
+  processError(proc)
+else:
+  print "bad mode"

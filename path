@@ -1,0 +1,9 @@
+# This script echos the whole friggin path, because ls doesn't do it
+# Syntax: path FILE, path PATTERN
+# Aaron White 2017
+
+for f in "$@"; do
+  readlink -f $f
+done
+
+

@@ -1,0 +1,20 @@
+#! /bin/bash                                                                                                                                   
+# This is a helper script to run hg.py
+# hg.py cannot modify the current bash session's history, therefore
+# this script can be used so that the command executed appears in the
+# history. Therefore the syntax must be:
+#    $ source hgh ARGS
+
+#warning, overwrite this file
+histfile="/home/prime/.temphgfile"
+rm -f $histfile
+history -a
+
+#run hg.py to get command to run
+hg.py $histfile $@
+
+#run command in shell
+cmd=`cat $histfile`
+history -s $cmd
+eval $cmd
+
