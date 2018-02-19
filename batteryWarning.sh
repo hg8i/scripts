@@ -6,6 +6,7 @@
 
 percents=$(acpi | cut -d "," -f2 | cut -d "%" -f1)
 totalPercent=0
+chargingStatuses=$(acpi | cut -d "," -f1 | cut -d ":" -f2 | tr -d " ")
 
 # sum battery percents
 while read -r line; do
@@ -13,16 +14,25 @@ while read -r line; do
 done <<< "$percents"
 echo "totalPercent:${totalPercent}"
 
+#check if charging is in charging status
+isCharging=false;
+while read -r line; do
+	if [ $line = "Charging" ]; then
+		isCharging=true;
+	fi
+done <<< $chargingStatuses
+
 danger=10
 warning=20
-if [ $totalPercent -gt $danger -a $totalPercent -lt $warning ]; then
-  echo "Low battery"
-  notify-send "Low battery" --expire-time 2 --urgency=normal "$totalPercent"
-elif [ $totalPercent -lt $danger ]; then
-  echo "No battery"
-  notify-send "No battery!" --urgency=critical "$totalPercent"
-else
-  echo "Good battery"
+if [ $isCharging = false ]; then
+	if [ $totalPercent -gt $danger -a $totalPercent -lt $warning ]; then
+		echo "Low battery"
+		notify-send "Low battery" --expire-time 2 --urgency=normal "$totalPercent"
+	elif [ $totalPercent -lt $danger ]; then
+		echo "No battery"
+		notify-send "No battery!" --urgency=critical "$totalPercent"
+	else
+		echo "Good battery"
+	fi
 fi
-
 
