@@ -1,0 +1,3 @@
+#!/bin/bash
+
+scp -i ~/.ssh/umt aaronsw@umt3int01.physics.lsa.umich.edu:${1} ${2}
