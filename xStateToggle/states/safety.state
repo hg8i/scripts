@@ -1,0 +1,16 @@
+# state for when laptop is in laptop mode
+# format is "keyword: string"
+# acceptable keywords include:
+#   run -> arbitrary event
+#   name -> name of state, displayed on switch
+#   xmodmap -> run xmodmap, with the following config file
+#   xrandr -> run xrandr, with the following config file
+#
+# This state is a safety precaution, in case part of the computer is unusable (ie keyboard, track, esc)
+
+
+name: Safety
+run: flashesc
+run: xinput set-prop 11 "Device Enabled" 1
+xrandr: --auto
+

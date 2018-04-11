@@ -1,0 +1,14 @@
+# state for when laptop is in laptop mode
+# format is "keyword: string"
+# acceptable keywords include:
+#   run -> arbitrary event
+#   name -> name of state, displayed on switch
+#   xmodmap -> run xmodmap, with the following config file
+#   xrandr -> run xrandr, with the following config file
+
+
+name: Laptop Mode
+run: flashesc
+xmodmap: /home/prime/.Xmodmap_t470s
+xrandr: --auto
+run: xinput set-prop 11 "Device Enabled" 0
