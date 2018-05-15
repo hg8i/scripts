@@ -1,9 +1,17 @@
 # This script echos the whole friggin path, because ls doesn't do it
+# It also copies the result to the xclipboard
 # Syntax: path FILE, path PATTERN
 # Aaron White 2017
 
-for f in "$@"; do
-  readlink -f $f
-done
+if [ "$#" -lt 1 ]; then # run with pwd
+	pwd
+	# assumes linux, change for other
+	pwd | tr "\n" " " | xclip 
+else
+	for f in "$@"; do
+		readlink -f $f 
+		readlink -f $f | tr "\n" " " | xclip
+	done
+fi
 
 
