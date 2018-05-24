@@ -27,7 +27,7 @@ def executeState(statePath):
     arg = instruction[1]
     exe = "echo default"
     if com == "name":
-      exe = 'notify-send "Switched to use state: {0}" --expire-time 2 --urgency=normal'.format(arg)
+      exe = 'notify-send "Switched to use state: {0}" --expire-time 2000 --urgency=normal'.format(arg)
     elif com == "run":
       exe = os.popen(arg).read()
     elif com == "xrandr":

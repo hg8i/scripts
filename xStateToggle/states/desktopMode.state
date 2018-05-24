@@ -13,3 +13,4 @@ run: flashesc
 xrandr: --output eDP-1 --off --output HDMI-2 --auto --mode 1920x1200
 xmodmap: /home/prime/.Xmodmap_hhkb
 run: xinput set-prop 11 "Device Enabled" 0
+run: killall xcape;  xcape -e 'Control_L=Escape'

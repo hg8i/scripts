@@ -12,3 +12,4 @@ run: flashesc
 xmodmap: /home/prime/.Xmodmap_t470s
 xrandr: --auto
 run: xinput set-prop 11 "Device Enabled" 0
+run: killall xcape; xcape -e 'Control_L=Escape'
