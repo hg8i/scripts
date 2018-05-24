@@ -63,12 +63,19 @@ class wsManager:
       self.incrementScope()
     if mode=="changescope":
       self.changeScope(auxArg)
+    if mode=="removescope":
+      self.removeScope(auxArg)
     if mode=="reset":
       self.reset()
 
   def resetScopes(self):
     #clear memory of previous scopes
     self.data={"scopeList":[],"currentScope":-1,"currentWorkspace":-1}
+    self.savePickle()
+
+  def removeScope(self,name):
+    #clear memory of previous scopes
+    self.data["scopeList"].pop(self.data["scopeList"].index(name))
     self.savePickle()
 
   def registerScope(self,name):
