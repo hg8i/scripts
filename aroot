@@ -2,4 +2,4 @@
 
 # quick script to fix root's poorly written interface
 # seriously, these people suck
-root -b -q $1+\(\"${2}\"\)
+root -l -b -q $1\(\"${2}\"\)
