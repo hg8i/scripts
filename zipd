@@ -1,0 +1,11 @@
+#!/bin/bash
+# shortcut for zipping directories as name.zip
+# Aaron White 2018
+
+# remove trailing slashes
+target=${1%*/}
+target=${target%*/}
+target=${target%*/}
+
+echo "Zipping ${target} as ${target}.zip"
+zip -r ${target}.zip ${target}
