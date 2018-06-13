@@ -5,10 +5,13 @@
 # loop over inputs
 for i in $@; do
 	# remove trailing slashes
-	target=${1%*/}
+	target=${i%*/}
 	target=${target%*/}
 	target=${target%*/}
 
 	echo "Zipping ${target} as ${target}.zip"
+	rm -f ${target}.zip
+
+	echo "zip -r ${target}.zip ${target}"
 	zip -r ${target}.zip ${target}
 done
