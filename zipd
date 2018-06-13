@@ -2,10 +2,13 @@
 # shortcut for zipping directories as name.zip
 # Aaron White 2018
 
-# remove trailing slashes
-target=${1%*/}
-target=${target%*/}
-target=${target%*/}
+# loop over inputs
+for i in $@; do
+	# remove trailing slashes
+	target=${1%*/}
+	target=${target%*/}
+	target=${target%*/}
 
-echo "Zipping ${target} as ${target}.zip"
-zip -r ${target}.zip ${target}
+	echo "Zipping ${target} as ${target}.zip"
+	zip -r ${target}.zip ${target}
+done
