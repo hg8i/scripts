@@ -92,7 +92,7 @@ class wsManager:
 
   def notify(self,msg):
     #notify-send mes
-    os.popen('notify-send --expire-time 1 --urgency=normal "{0}"'.format(msg))
+    os.popen('notify-send --expire-time 500 --urgency=normal "{0}"'.format(msg))
 
   #####################
   # public functions  #
