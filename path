@@ -10,7 +10,9 @@ if [ "$#" -lt 1 ]; then # run with pwd
 else
 	for f in "$@"; do
 		readlink -f $f 
-		readlink -f $f | tr "\n" " " | xclip
+		if [ command -v xclip ]; then
+			readlink -f $f | tr "\n" " " | xclip
+		fi
 	done
 fi
 
