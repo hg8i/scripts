@@ -6,7 +6,9 @@
 if [ "$#" -lt 1 ]; then # run with pwd
 	pwd
 	# assumes linux, change for other
-	pwd | tr "\n" " " | xclip 
+	if [ command -v xclip ]; then
+		pwd | tr "\n" " " | xclip 
+	fi
 else
 	for f in "$@"; do
 		readlink -f $f 
