@@ -7,13 +7,13 @@ if [ "$#" -lt 1 ]; then # run with pwd
 	pwd
 	# assumes linux, change for other
 	if [ $(command -v xclip) ]; then
-		pwd | tr "\n" " " | xclip 
+		pwd | tr -d "\n" | xclip 
 	fi
 else
 	for f in "$@"; do
 		readlink -f $f 
 		if [ $(command -v xclip) ]; then
-			readlink -f $f | tr "\n" " " | xclip
+			readlink -f $f | tr -d "\n" | xclip
 		fi
 	done
 fi

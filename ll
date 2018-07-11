@@ -18,5 +18,5 @@ if [ $(command -v xclip) ]; then
 	# remove color formatting (match control sequences)
 	mostRecent=$(echo $mostRecent | sed -r "s/[[:cntrl:]]\[[0-9]+[;0-9]*m//g")
 	# copy to xclip
-	echo $mostRecent | xclip
+	echo $mostRecent | tr -d "\n" | xclip
 fi
