@@ -2,7 +2,7 @@
 #fancy ls, only print size, date, and name
 #Aaron White, 2017
 
-result=$(/bin/ls ${1} --color=always -lrth)
+result=$(/bin/ls ${@} --color=always -lrth)
 
 if [ $(echo "$result" | wc -l) -eq 1 ]; then
   echo "$result" | awk "{print \$5 \"\\t\" \$6 \$7 \" \" \$8 \"\\t\" \$9}"
