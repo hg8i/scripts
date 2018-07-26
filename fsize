@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Trick copied from hsemdornus ttps://bbs.archlinux.org/viewtopic.php?id=44121
+
+printf '\33]50;%s%d\007' "xft:Monospace:antialias=true:size=" $1
+
