@@ -3,11 +3,12 @@
 #Aaron White, 2017
 
 result=$(/bin/ls ${@} --color=always -lrth)
+# echo $result
 
 if [ $(echo "$result" | wc -l) -eq 1 ]; then
   echo "$result" | awk "{print \$5 \"\\t\" \$6 \$7 \" \" \$8 \"\\t\" \$9}"
 else 
-  echo "$result" | tail -n +2 | awk "{print \$5 \"\\t\" \$6 \$7 \" \" \$8 \"\\t\" \$9}"
+  echo "$result" | tail -n +1 | awk "{print \$5 \"\\t\" \$6 \$7 \" \" \$8 \"\\t\" \$9}"
 fi
 
 # copy final line to xclip (if it exists)
