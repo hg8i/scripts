@@ -202,7 +202,7 @@ class wsManager:
     #requires self.names to be workspaces
     #load data from pickle file
     try: self.data= pickle.load(open(resourcePath,"r"))
-    except: self.data={"scopeList":[],"currentScope":-1,"currentWorkspace":-1}
+    except: self.data={"scopeList":[""],"currentScope":-1,"currentWorkspace":-1}
     #correct if scope number too large
     self.data["currentScope"]=min(len(self.data["scopeList"])-1,self.data["currentScope"])
     #correct if scope no longer exists
