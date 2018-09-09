@@ -41,6 +41,10 @@ class MyStatusIconApp:
         # also add block address
         udisk["name"] = block
         udisk["blockPath"] = "/dev/"+block
+
+        # calculate size (if available)
+        if "Size" in udisk.keys():
+            udisk["Size GB"] = str(int(udisk["Size"])/1e9)
         return udisk
 
 
@@ -96,7 +100,7 @@ class MyStatusIconApp:
         win.show_all()
 
 
-    def left_click_event(self,event):
+    def left_click_event(self,status):
         """ make popup menu for unmounting """
         self.getListOfDrives(mountedOnly=True)
         nameFunc = lambda block: "Unmount {0} at {1}".format(block["name"],block["MountPoints"])
@@ -105,7 +109,8 @@ class MyStatusIconApp:
         self.makeMenuList(self.menu,nameFunc,self.unmount)
         # add buttons to list
         self.menu.show_all()
-        self.menu.popup(None, None, None, self.status_icon, 1, time.time())
+        time = Gtk.get_current_event_time()
+        self.menu.popup(None, None, None, self.status_icon, 1, time)
 
     def right_click_event(self, icon, button, time):
         """ make popup menu for additional drive info """
@@ -116,6 +121,7 @@ class MyStatusIconApp:
         self.makeMenuList(self.menu,nameFunc,self.infoLauncher)
         # add buttons to list
         self.menu.show_all()
+        print("=====: time",time)
         self.menu.popup(None, None, None, self.status_icon, 1, time)
 
     def show_about_dialog(self, widget):
@@ -155,6 +161,7 @@ class infoWindow(Gtk.Window):
         """ Get UUID of rel block, return true if found """
         ls = run("lsblk -fnr").readlines()
         for line in ls:
+            if len(line.split())<2: continue
             if line.split()[0]==self.block["name"]:
                 self.uuid = line.split()[2]
                 return True
@@ -182,7 +189,7 @@ class infoWindow(Gtk.Window):
         #############################################
         label   = Gtk.Label(label="Information", halign=Gtk.Align.START)
         grid = Gtk.Grid.new()
-        self.makeLabel(grid,0,"<big><u><b>Output of: udisksctl info -b /dev/{0}</b></u></big>\n".format(self.block["blockPath"]),width=2,col=0,fgColor=None,wrap=None)
+        self.makeLabel(grid,0,"<big><u><b>Output of: udisksctl info -b {0}</b></u></big>\n".format(self.block["blockPath"]),width=2,col=0,fgColor=None,wrap=None)
         for i,k in enumerate(self.block.keys()):
              i+=1
              self.makeLabel(grid,i,"<b>{0}</b>".format(k),col=0,align=Gtk.Align.START)

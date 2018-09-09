@@ -18,8 +18,10 @@ class quitter:
         self.status_icon = Gtk.StatusIcon()
         picturePath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"pic.png")
         self.status_icon.set_from_file(picturePath)
-        self.status_icon.connect("popup-menu", self.right_click_event)
-        self.status_icon.connect("activate", self.left_click_event)
+        # self.status_icon.set_has_tooltip(True)
+        # self.status_icon.connect("popup_menu", self.right_click_event)
+        # self.status_icon.connect("activate", self.left_click_event)
+        self.status_icon.connect("button-press-event", self.click_event)
 
         # colors
         x = 40000
@@ -47,7 +49,7 @@ class quitter:
         """ Quit i3 """
         run("i3-nagbar -t warning -m 'You called the exit function. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'")
 
-    def click_event(self):
+    def click_event(self,event,time):
         """ when button is clicked """
         # make menu
         self.menu = Gtk.Menu()
@@ -57,15 +59,16 @@ class quitter:
         self.menu.append(label)
         # add buttons to list
         self.menu.show_all()
-        self.menu.popup(None, None, None, self.status_icon, 1, time.time())
+        self.menu.popup(None, None, None, self.status_icon, 1, time.time)
 
     def left_click_event(self,event):
         """ call generic click event """
-        self.click_event()
+        abc = 79168992*2
+        self.click_event(abc)
 
     def right_click_event(self, icon, button, time):
         """ make popup menu for additional drive info """
-        self.click_event()
+        self.click_event(time)
 
 app = quitter()
 Gtk.main()
