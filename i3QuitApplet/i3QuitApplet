@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+
+import gi, os, time
+gi.require_version('Gtk', '3.0')
+
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository.Gdk import Color
+
+def run(c):
+    """ Verbose popen wrapper """
+    print("Running:")
+    print(c)
+    return os.popen(c)
+
+class quitter:
+    def __init__(self):
+        self.status_icon = Gtk.StatusIcon()
+        picturePath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"pic.png")
+        self.status_icon.set_from_file(picturePath)
+        self.status_icon.connect("popup-menu", self.right_click_event)
+        self.status_icon.connect("activate", self.left_click_event)
+
+        # colors
+        x = 40000
+        self.protectedFgColor = Color(x,x,x)
+        self.normalFgColor = Color(0,x,0)
+
+    def makeMenuList(self,menu,nameFunc,actionFunc):
+        """ Add entries of self.blockData to menu
+            Labels are based on nameFunc(block)
+            Action is actionFunc(block)
+        """
+        labels=[]
+        for block in self.blockData:
+            label = Gtk.MenuItem()
+            label.set_label(nameFunc(block))
+            # if block is protected, change color, don't connect
+            if any([p in block["name"] for p in self.protected]):
+                label.modify_fg(Gtk.StateFlags.NORMAL,self.protectedFgColor)
+            else:
+                label.modify_fg(Gtk.StateFlags.NORMAL,self.normalFgColor)
+            label.connect("activate", actionFunc, block)
+            menu.append(label)
+
+    def i3Quit(self,event):
+        """ Quit i3 """
+        run("i3-nagbar -t warning -m 'You called the exit function. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'")
+
+    def click_event(self):
+        """ when button is clicked """
+        # make menu
+        self.menu = Gtk.Menu()
+        label = Gtk.MenuItem()
+        label.set_label("Quit i3")
+        label.connect("activate", self.i3Quit)
+        self.menu.append(label)
+        # add buttons to list
+        self.menu.show_all()
+        self.menu.popup(None, None, None, self.status_icon, 1, time.time())
+
+    def left_click_event(self,event):
+        """ call generic click event """
+        self.click_event()
+
+    def right_click_event(self, icon, button, time):
+        """ make popup menu for additional drive info """
+        self.click_event()
+
+app = quitter()
+Gtk.main()
