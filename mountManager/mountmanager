@@ -205,7 +205,7 @@ class infoWindow(Gtk.Window):
         label   = Gtk.Label(label="Instructions", halign=Gtk.Align.START)
         c1   = "\n<big><b><u>Instructions for setting up mounting</u></b></big>\n"
         c2   = "<big><b>To implement the automatic mounting script</b></big>\n"
-        c3   = "Edit (or create) the file /etc/udev/rules.d/50-harddrive.rules and add the following line (replacing capitals or regex):\n <tt></tt>"
+        c3   = "Edit (or create) the file /etc/udev/rules.d/50-harddrive.rules and add the following line (replacing capitals or regex). More info: udevadm info -a -n {0}\n <tt></tt>".format(self.block["blockPath"])
         self.getSerial()
         if self.getSerial():
             mountUsbPath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"mountUsb.sh")
@@ -214,7 +214,7 @@ class infoWindow(Gtk.Window):
         else:
             c4   = "<tt>Problem making command (this is probably a partition), run udevadm info -a -n {0}, find a suitable identifier, and follow the instructions in the info page for the main block (ie if this is sda1, look at sda)</tt>".format(self.block["blockPath"])
         c5   = "\n<big><b>To specify the default mounting location of a drive</b></big>\n"
-        c6   = "You can change the fstab configuration, edit /etc/fstab and add the line (replacing the capitals):\n"
+        c6   = "You can change the fstab configuration, edit /etc/fstab and add the line (replacing the capitals). More info: lsblk -fnr.\n"
         if self.getUUID():
             c7   = "<tt>UUID={0} /HOME/PATH/TO/MOUNT auto nofail,x-systemd.device-timeout=1 0 2</tt>\n".format(self.uuid)
         else:
