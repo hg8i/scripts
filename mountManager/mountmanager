@@ -159,11 +159,11 @@ class infoWindow(Gtk.Window):
 
     def getUUID(self):
         """ Get UUID of rel block, return true if found """
-        ls = run("lsblk -fnr").readlines()
+        ls = run("lsblk -r -o NAME,UUID").readlines()
         for line in ls:
             if len(line.split())<2: continue
             if line.split()[0]==self.block["name"]:
-                self.uuid = line.split()[2]
+                self.uuid = line.split()[1]
                 return True
         return False
 
