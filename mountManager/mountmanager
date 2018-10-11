@@ -156,6 +156,12 @@ class MyStatusIconApp:
         # make menu
         self.menu = Gtk.Menu()
         self.makeMenuList(self.menu,nameFunc,self.infoLauncher,self.blockData,self.normalFgColor)
+        # add quit function to menu
+        label = Gtk.MenuItem()
+        label.set_label("Quit")
+        label.modify_fg(Gtk.StateFlags.NORMAL,self.unmountableColor)
+        label.connect("activate", quit)
+        self.menu.append(label)
         # add buttons to list
         self.menu.show_all()
         print("=====: time",time)
