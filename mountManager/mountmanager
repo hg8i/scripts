@@ -26,6 +26,8 @@ class MyStatusIconApp:
         x = 40000
         self.protectedFgColor = Color(x,x,x)
         self.normalFgColor = Color(0,x,0)
+        self.unmountableColor = Color(x,0,0)
+        self.mountableColor = Color(0,x,0)
 
         self.button = Gtk.Button(label="Click Here")
         self.buttonConnect= self.button.connect("clicked", lambda x: print("button"))
@@ -48,39 +50,64 @@ class MyStatusIconApp:
         return udisk
 
 
-    def getListOfDrives(self,mountedOnly=True):
+    def isProtected(self,block):
+        """ Return true if name is protected name """
+        name = block["name"]
+        return any([p in name for p in self.protected])
+
+    def getListOfDrives(self):
         """ Get a list of mounted drives, save as self.blockData """
         # get generic output
         udiskOutput = run("lsblk -n -r").readlines()
         # get mounted blocknames
         blockNames = [s.split()[0] for s in udiskOutput]
         # get detailed info
+        # all blocks
         self.blockData = [self.parseUdisk(b) for b in blockNames]
-        if mountedOnly:
-            self.blockData = [b for b in self.blockData if "MountPoints" in b]
-            self.blockData = [b for b in self.blockData if b["MountPoints"]!=""]
+        # mounted, unprotected blocks
+        self.blockDataMounted = [b for b in self.blockData if "MountPoints" in b]
+        self.blockDataMounted = [b for b in self.blockDataMounted if b["MountPoints"]!=""]
+        self.blockDataMounted = [b for b in self.blockDataMounted if not self.isProtected(b) ]
+        # unmounted, unprotected blocks
+        self.blockDataNotMounted = []
+        for b in self.blockData:
+            if self.isProtected(b): continue
+            if "MountPoints" not in b: continue
+            if b["MountPoints"]!="": continue
+            self.blockDataNotMounted.append(b)
         # output
         print("Found blocks", blockNames)
-        # for block in self.blockData:
-        #     if "MountPoints" in block.keys():
-        #         print(block["name"], block["MountPoints"])
 
-    def makeMenuList(self,menu,nameFunc,actionFunc):
-        """ Add entries of self.blockData to menu
+    def makeMenuList(self,menu,nameFunc,actionFunc,blockData,highlightColor):
+        """ Add entries of blockData to menu
             Labels are based on nameFunc(block)
             Action is actionFunc(block)
         """
-        labels=[]
-        for block in self.blockData:
+
+        for block in blockData:
             label = Gtk.MenuItem()
             label.set_label(nameFunc(block))
             # if block is protected, change color, don't connect
             if any([p in block["name"] for p in self.protected]):
                 label.modify_fg(Gtk.StateFlags.NORMAL,self.protectedFgColor)
             else:
-                label.modify_fg(Gtk.StateFlags.NORMAL,self.normalFgColor)
+                label.modify_fg(Gtk.StateFlags.NORMAL,highlightColor)
             label.connect("activate", actionFunc, block)
             menu.append(label)
+
+    def notify(self,msg):
+        """ Send notification msg """
+        run('notify-send "{0}"'.format(msg))
+
+    def mount(self,x, block):
+        """ Mount block """
+        if any([p in block["name"] for p in self.protected]):
+            print("No mount")
+            return
+        print("Unmount", block["name"])
+        run("udisksctl mount -b {0}".format(block["blockPath"]))
+        self.notify("Drive {0} has mounted".format(block["name"]))
+        print("Done")
 
     def unmount(self,x, block):
         """ Unmount block """
@@ -89,8 +116,9 @@ class MyStatusIconApp:
             return
         print("Unmount", block["name"])
         run("udisksctl unmount -b {0}".format(block["blockPath"]))
-        time.sleep(4)
-        run("udisksctl power-off -b {0}".format(block["blockPath"]))
+        self.notify("Drive {0} has unmounted".format(block["name"]))
+        # time.sleep(4)
+        # run("udisksctl power-off -b {0}".format(block["blockPath"]))
         print("Done")
 
     def infoLauncher(self,x, block):
@@ -99,14 +127,23 @@ class MyStatusIconApp:
         win = infoWindow(block)
         win.show_all()
 
+    def addMenuLabel(self,menu,text):
+        """ Add neutral label to menu """
+        label = Gtk.MenuItem()
+        label.set_label(text)
+        menu.append(label)
 
     def left_click_event(self,status):
-        """ make popup menu for unmounting """
-        self.getListOfDrives(mountedOnly=True)
-        nameFunc = lambda block: "Unmount {0} at {1}".format(block["name"],block["MountPoints"])
+        """ make popup menu for mounting/unmounting """
+        self.getListOfDrives()
         # make menu
         self.menu = Gtk.Menu()
-        self.makeMenuList(self.menu,nameFunc,self.unmount)
+        self.addMenuLabel(self.menu,"Unmountable drives")
+        nameFunc = lambda block: "Unmount {0} at {1}".format(block["name"],block["MountPoints"])
+        self.makeMenuList(self.menu,nameFunc,self.unmount,self.blockDataMounted,self.unmountableColor)
+        self.addMenuLabel(self.menu,"Mountable drives")
+        nameFunc = lambda block: "Mount {0}".format(block["name"])
+        self.makeMenuList(self.menu,nameFunc,self.mount,self.blockDataNotMounted,self.mountableColor)
         # add buttons to list
         self.menu.show_all()
         time = Gtk.get_current_event_time()
@@ -114,11 +151,11 @@ class MyStatusIconApp:
 
     def right_click_event(self, icon, button, time):
         """ make popup menu for additional drive info """
-        self.getListOfDrives(mountedOnly=False)
+        self.getListOfDrives()
         nameFunc = lambda block: "Information on {0}".format(block["name"])
         # make menu
         self.menu = Gtk.Menu()
-        self.makeMenuList(self.menu,nameFunc,self.infoLauncher)
+        self.makeMenuList(self.menu,nameFunc,self.infoLauncher,self.blockData,self.normalFgColor)
         # add buttons to list
         self.menu.show_all()
         print("=====: time",time)
@@ -139,7 +176,7 @@ class MyStatusIconApp:
 class infoWindow(Gtk.Window):
     def __init__(self,block):
         self.block = block
-        Gtk.Window.__init__(self, title="Hello World")
+        Gtk.Window.__init__(self, title="Info for disk")
         Gtk.Window.set_modal(self,1)
         self.set_default_size(500,500)
 
@@ -157,26 +194,32 @@ class infoWindow(Gtk.Window):
         if ev.keyval == Gdk.KEY_q: #If Escape pressed, reset text
             self.destroy()
 
-    def getUUID(self):
-        """ Get UUID of rel block, return true if found """
-        ls = run("lsblk -r -o NAME,UUID").readlines()
+    def getDiskInfo(self):
+        """ Get UUID, FSTYPE of rel block, return true if found """
+        ls = run("lsblk -r -o NAME,UUID,FSTYPE").readlines()
         for line in ls:
-            if len(line.split())<2: continue
+            if len(line.split())<3: continue
             if line.split()[0]==self.block["name"]:
                 self.uuid = line.split()[1]
+                self.fstype = line.split()[2]
                 return True
         return False
 
     def getSerial(self):
-        """ Get serial number of rel block, return true if found 
+        """ Get serial number (and partition if available) of rel block, return true if found 
             Assumes serial number is first serial number? Seems okay
         """
         ls = run("udevadm info -a -n {0}".format(self.block["blockPath"])).readlines()
+        self.serial=False
+        self.partition=False
         for line in ls:
-            if "serial" in line: 
+            if "partition" in line: 
+                if len(line.split('"'))<2: continue
+                self.partition=line.split('"')[1]
+            if "serial" in line and self.serial==False: 
                 if len(line.split('"'))<2: continue
                 self.serial=line.split('"')[1]
-                return True
+        if self.serial: return True
         return False
 
 
@@ -203,34 +246,45 @@ class infoWindow(Gtk.Window):
         #############################################
         grid = Gtk.Grid.new()
         label   = Gtk.Label(label="Instructions", halign=Gtk.Align.START)
-        c1   = "\n<big><b><u>Instructions for setting up mounting</u></b></big>\n"
-        c2   = "<big><b>To implement the automatic mounting script</b></big>\n"
-        c3   = "Edit (or create) the file /etc/udev/rules.d/50-harddrive.rules and add the following line (replacing capitals or regex). More info: udevadm info -a -n {0}\n <tt></tt>".format(self.block["blockPath"])
-        self.getSerial()
+        textLines=[]
+
+
+        textLines.append({"copy":False,"text": "\n<big><b><u>Instructions for setting up mounting</u></b></big>"})
+        textLines.append({"copy":False,"text": "<big><b>To implement the automatic mounting script</b></big>"})
+        textLines.append({"copy":False,"text": "Edit (or create) the file /etc/udev/rules.d/50-harddrive.rules and add the following line (replacing capitals or regex). More info: udevadm info -a -n {0} <tt></tt>".format(self.block["blockPath"])})
         if self.getSerial():
             mountUsbPath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"mountUsb.sh")
-            c4   = 'ACTION=="add",   KERNEL=="sd[b-z]*",ATTRS{{serial}}=="{0}",RUN+="/usr/bin/su USERNAME -c \\"{1} mount DRIVENAME %k\\""\n'.format(self.serial,mountUsbPath)
-            c4  += 'ACTION=="remove",KERNEL=="sd[b-z]*",ATTRS{{serial}}=="{0}",RUN+="/usr/bin/su USERNAME -c \\"{1} unmount DRIVENAME %k\\""'.format(self.serial,mountUsbPath)
+            if self.partition:
+                udevRule = 'ACTION=="add",   KERNEL=="sd[a-z]*",ATTR{{partition}}=="{1}",ATTRS{{serial}}=="{0}",RUN+="/usr/bin/su USERNAME -c \\"{2} mount DRIVENAME %k\\""\n'.format(self.serial,self.partition,mountUsbPath)
+                udevRule+= 'ACTION=="remove",KERNEL=="sd[a-z]*",ATTR{{partition}}=="{1}",ATTRS{{serial}}=="{0}",RUN+="/usr/bin/su USERNAME -c \\"{2} unmount DRIVENAME %k\\""'.format(self.serial,self.partition,mountUsbPath)
+                textLines.append({"copy":True,"text": udevRule})
+            else:
+                udevRule = 'ACTION=="add",   KERNEL=="sd[a-z]*",ATTRS{{serial}}=="{0}",RUN+="/usr/bin/su USERNAME -c \\"{1} mount DRIVENAME %k\\""\n'.format(self.serial,mountUsbPath)
+                udevRule+= 'ACTION=="remove",KERNEL=="sd[a-z]*",ATTRS{{serial}}=="{0}",RUN+="/usr/bin/su USERNAME -c \\"{1} unmount DRIVENAME %k\\""'.format(self.serial,mountUsbPath)
+                textLines.append({"copy":True,"text": udevRule})
         else:
-            c4   = "<tt>Problem making command (this is probably a partition), run udevadm info -a -n {0}, find a suitable identifier, and follow the instructions in the info page for the main block (ie if this is sda1, look at sda)</tt>".format(self.block["blockPath"])
-        c5   = "\n<big><b>To specify the default mounting location of a drive</b></big>\n"
-        c6   = "You can change the fstab configuration, edit /etc/fstab and add the line (replacing the capitals). More info: lsblk -fnr.\n"
-        if self.getUUID():
-            c7   = "<tt>UUID={0} /HOME/PATH/TO/MOUNT auto nofail,x-systemd.device-timeout=1 0 2</tt>\n".format(self.uuid)
+            textLines.append({"copy":False,"text": "<tt>Problem making command (this is probably a partition), run udevadm info -a -n {0}, find a suitable identifier, and follow the instructions in the info page for the main block (ie if this is sda1, look at sda)</tt>".format(self.block["blockPath"])})
+        textLines.append({"copy":False,"text": "\n<big><b>To specify the default mounting location of a drive</b></big>"})
+        textLines.append({"copy":False,"text": "You can change the fstab configuration, edit /etc/fstab and add the line (replacing the capitals). More info: lsblk -fnr."})
+        if self.getDiskInfo():
+            textLines.append({"copy":True,"text": "<tt>UUID={0} /HOME/PATH/TO/MOUNT auto nofail,x-systemd.device-timeout=1 0 2</tt>".format(self.uuid)})
+            textLines.append({"copy":False,"text": "The filesystem type is {0}. If you can't read this fstype, change it to a Linux friendly fstype like ext4, and reload this window to get new UUIDs. For example:".format(self.fstype)})
+            textLines.append({"copy":True,"text": "mkfs.ext4 {0}".format(self.block["blockPath"])})
         else:
-            c7   = "<tt>Problem making command, edit /etc/fstab</tt>"
-        c8 = "You may also need to enable unauthenticated unmounting. See https://askubuntu.com/questions/552503/stop-asking-for-authentication-to-mount-usb-stick"
+            textLines.append({"copy":False,"text": "<tt>Problem making command, edit /etc/fstab</tt>"})
+        textLines.append({"copy":False,"text": "You may also need to enable unauthenticated unmounting. See:"})
+        textLines.append({"copy":True,"text": "https://askubuntu.com/questions/552503/stop-asking-for-authentication-to-mount-usb-stick"})
+
+        
 
         #
-        self.makeLabel(grid,0,c1, align=Gtk.Align.START)
-        self.makeLabel(grid,1,c2, align=Gtk.Align.START)
-        self.makeLabel(grid,2,c3, align=Gtk.Align.START)
-        self.makeLabel(grid,3,c4, wrap=True,fgColor=self.codeColor,select=True)
-        self.makeLabel(grid,4,c5, align=Gtk.Align.START)
-        self.makeLabel(grid,5,c6, align=Gtk.Align.START)
-        self.makeLabel(grid,6,c7, wrap=True,fgColor=self.codeColor,select=True)
-        self.makeLabel(grid,7,c8, align=Gtk.Align.START)
-        #
+        for i, textLine in enumerate(textLines):
+            text = textLine["text"]+"\n"
+            copyable = textLine["copy"]
+            if copyable:
+                self.makeLabel(grid,i,text, wrap=True,fgColor=self.codeColor,select=True)
+            else:
+                self.makeLabel(grid,i,text,wrap=True,align=Gtk.Align.START)
         notebook.append_page(grid,label)
 
         #############################################
