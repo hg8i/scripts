@@ -1,21 +1,26 @@
+#!/bin/bash
+
 # This script echos the whole friggin path, because ls doesn't do it
 # It also copies the result to the xclipboard
-# Syntax: path FILE, path PATTERN
+# Syntax: "path FILE", or "path PATTERN"
 # Aaron White 2017
 
 if [ "$#" -lt 1 ]; then # run with pwd
-	pwd
-	# assumes linux, change for other
-	if [ $(command -v xclip) ]; then
-		pwd | tr -d "\n" | xclip 
-	fi
+    # print output of pwd
+    pwd
+    # check if xclip is installed
+    if [ $(command -v xclip) ]; then
+        pwd | tr -d "\n" | xclip 
+    fi
 else
-	for f in "$@"; do
-		readlink -f $f 
-		if [ $(command -v xclip) ]; then
-			readlink -f $f | tr -d "\n" | xclip
-		fi
-	done
+    # run with pattern
+    for f in "$@"; do
+        readlink -f $f 
+        # check if xclip is installed
+        if [ $(command -v xclip) ]; then
+            readlink -f $f | tr -d "\n" | xclip
+        fi
+    done
 fi
 
 
