@@ -20,3 +20,4 @@ if [ $(command -v xclip) ]; then
     # copy to xclip
     echo $mostRecent | tr -d "\n" | xclip
 fi
+
