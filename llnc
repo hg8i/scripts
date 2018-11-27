@@ -1,0 +1,13 @@
+#!/bin/bash
+# Fancy ls, only print size, date, and name
+# llnc, nc stands for "No Copy": does not copy to xclip
+#Aaron White, 2017
+
+result=$(/bin/ls ${@} --color=always -lrth)
+
+# PRINTOUT LINES IN NICE PRESENTATION
+if [ $(echo "$result" | wc -l) -eq 1 ]; then
+  echo "$result" | awk "{print \$5 \"\\t\" \$6 \$7 \" \" \$8 \"\\t\" \$9}"
+else 
+  echo "$result" | tail -n +1 | awk "{print \$5 \"\\t\" \$6 \$7 \" \" \$8 \"\\t\" \$9}"
+fi
