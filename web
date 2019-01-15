@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Wrapper for default web-browser, epicially for launching from dmenu
+
+# In 2018 I used chromium+vimium plugin. The downsides were: 
+#   * Automatic updates (don't do that!)
+#   * Vimium configuration seemed lacking
+#   * No default homepage (what?)
+#   * Chrome seemed resource intensive
+# With these faults in mind, in 2019 I am trying out vimb, which had
+# been installed for a while anyway
+
+export XDG_CONFIG_HOME=""
+vimb -c /home/prime/.vimbrc
