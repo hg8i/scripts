@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# script for scp-ing from UMT3
+
+time rysnc -rvP -e "ssh -i $HOME/.ssh/umt" aaronsw@umt3int01.physics.lsa.umich.edu:${1} ${2}
