@@ -30,43 +30,67 @@ def getFocusedWorkspace():
         if w["focused"]: return w
     return None
 
-def treeTraverse(tree,result=None,depth=0,verbose=False):
+def focusedSearch(tree,result=None,depth=0,verbose=False):
     """ Tree Traversal by recursion
         Returns result dict with current focused id, and id of 
             adjacent window
         Requires i3 tree, and result dict of format:
-            {"foundFocus":False,"thisId":None,"adjacentId":None}
+            {"foundFocus":False,"parentId":None,"parentAdjacentId":None}
     """
     # stop searching if focused has been found
-    if result["foundFocus"]: return False
+    # if result["foundFocus"]: return False
     # search all child nodes
     for iNode,node in enumerate(tree):
-        if verbose: print yellow("=="*depth,node["name"])
+        if verbose: print yellow("=="*depth,node["name"]), node["id"], node["focused"]
         # Base case
         if node["focused"]:
-            if verbose: print green("focused node",iNode)
-            if verbose: print node["id"]
-            if verbose: print node.keys()
+            iAdjacent = (iNode+1)%len(tree)
+            result["focusedId"]       = node["id"]
+            result["focusAdjacentId"] = tree[iAdjacent]["id"]
+            if verbose: print green("Found focus, {0}, adjacent {1}".format(node["id"],tree[iAdjacent]["id"]))
             return True # return true to indicate is focused
         # Recursion
-        nodeIsFocused = treeTraverse(node["nodes"],result,depth+1)
+        nodeIsFocused = focusedSearch(node["nodes"],result=result,depth=depth+1,verbose=verbose)
         # Check if child is focused, and update dictionary
         if nodeIsFocused:
             iAdjacent = (iNode+1)%len(tree)
+            print red(iNode)
+            print red(iNode+1)
+            print red(len(tree))
+            if verbose: print green("Found parent")
             if verbose: print green("This node",iNode)
+            if verbose: print green("This node id",tree[iNode]["id"])
             if verbose: print green("Adjacent node",iAdjacent)
             if verbose: print green("Adjacent id",tree[iAdjacent]["id"])
             if not result["foundFocus"]:
                 result["foundFocus"] = True
-                result["thisId"]     = tree[iNode]["id"]
-                result["adjacentId"] = tree[iAdjacent]["id"]
+                result["parentId"]     = tree[iNode]["id"]
+                result["parentAdjacentId"] = tree[iAdjacent]["id"]
             return False # return false to indicate not focused
     return False # return false to indicate not focused
+
+def getNode(tree,name,depth=0,verbose=False):
+    """ Tree Traversal by recursion
+        Returns node with name name
+    """
+    foundNode=None
+    for iNode,node in enumerate(tree):
+        if verbose: print yellow("=="*depth,node["name"]), node["id"], node["focused"]
+        # base case
+        if node["name"]==name:
+            if verbose: print green("Found node to search",node["name"])
+            return node
+        # Recursion
+        else:
+            foundNode = getNode(node["nodes"],name,depth=depth+1,verbose=verbose)
+            if foundNode!=None:
+                return foundNode
+    return foundNode
+
 
 
 def switchFocused():
     """ Switch i3 focus to adjacent window """
-    # focusedWorkspace = getFocusedWorkspace()["name"]
 
     # evaluate i3 tree
     true=True
@@ -75,17 +99,57 @@ def switchFocused():
     tree = os.popen("i3-msg -t get_tree").read()
     tree = eval(tree)
 
+    workspaceName = getFocusedWorkspace()["name"]
+    print "Searching for",workspaceName
+    workspace = getNode(tree["nodes"],workspaceName,verbose=False)
+
     # search i3 tree for current focus and adjacent parent
-    result={"foundFocus":False,"thisId":None,"adjacentId":None}
-    treeTraverse(tree["nodes"],result=result)
-    idToFocus = result["adjacentId"]
+    result={"foundFocus":False,
+            "focusId":None,"focusAdjacentId":None,
+            "parentId":None,"parentAdjacentId":None
+           }
+    focusedSearch(workspace["nodes"],result=result,verbose=True)
+    print green(result)
+
+    # select which id to switch to
+    parentId         = result["parentId"]
+    parentAdjacentId = result["parentAdjacentId"]
+    focusId          = result["focusId"]
+    focusAdjacentId  = result["focusAdjacentId"]
+
+    # if no parent, and focusable neighbor, focus neighbor
+    if parentId==None and focusAdjacentId!=None:
+        print "focusAdjacentId"
+        idToFocus = focusAdjacentId
+    # if no parent and no neighbor, focus self
+    elif parentId==None and focusAdjacentId==None:
+        print "focusId, no parent, no adjacent"
+        idToFocus = focusId
+    # if yes parent and parent has neighbor, focus parent's neighbor
+    elif parentId!=parentAdjacentId:
+        print "parentAdjacentId"
+        idToFocus = parentAdjacentId
+    # if yes parent and parent has no neighbor, and has own neighbor, focus neighbor
+    elif focusAdjacentId!=None:
+        print "focusAdjacentId"
+        idToFocus = focusAdjacentId
+    else:
+        print "focusId"
+        idToFocus = focusId
 
     # set focus to adjacent window
     cmd = """i3-msg '[con_id="{0}"] focus'""".format(idToFocus)
+    print red(cmd)
     os.popen(cmd)
 
     # focus to child in window
     cmd = """i3-msg focus child""".format(idToFocus)
+    print red(cmd)
+    os.popen(cmd)
+
+    # focus to child in window
+    cmd = """i3-msg focus child""".format(idToFocus)
+    print red(cmd)
     os.popen(cmd)
 
 switchFocused()
