@@ -100,7 +100,7 @@ def switchFocused():
     tree = eval(tree)
 
     workspaceName = getFocusedWorkspace()["name"]
-    print "Searching for",workspaceName
+    # print "Searching for",workspaceName
     workspace = getNode(tree["nodes"],workspaceName,verbose=False)
 
     # search i3 tree for current focus and adjacent parent
@@ -109,7 +109,7 @@ def switchFocused():
             "parentId":None,"parentAdjacentId":None
            }
     focusedSearch(workspace["nodes"],result=result,verbose=True)
-    print green(result)
+    # print green(result)
 
     # select which id to switch to
     parentId         = result["parentId"]
@@ -119,22 +119,17 @@ def switchFocused():
 
     # if no parent, and focusable neighbor, focus neighbor
     if parentId==None and focusAdjacentId!=None:
-        print "focusAdjacentId"
         idToFocus = focusAdjacentId
     # if no parent and no neighbor, focus self
     elif parentId==None and focusAdjacentId==None:
-        print "focusId, no parent, no adjacent"
         idToFocus = focusId
     # if yes parent and parent has neighbor, focus parent's neighbor
     elif parentId!=parentAdjacentId:
-        print "parentAdjacentId"
         idToFocus = parentAdjacentId
     # if yes parent and parent has no neighbor, and has own neighbor, focus neighbor
     elif focusAdjacentId!=None:
-        print "focusAdjacentId"
         idToFocus = focusAdjacentId
     else:
-        print "focusId"
         idToFocus = focusId
 
     # set focus to adjacent window
@@ -142,14 +137,11 @@ def switchFocused():
     print red(cmd)
     os.popen(cmd)
 
-    # focus to child in window
-    cmd = """i3-msg focus child""".format(idToFocus)
-    print red(cmd)
-    os.popen(cmd)
+    # focus to child in window, repeat until no more childs
+    cmd = "i3-msg focus child"
+    result = eval(os.popen(cmd).read())[0]
+    while result["success"]:
+        result = eval(os.popen(cmd).read())[0]
 
-    # focus to child in window
-    cmd = """i3-msg focus child""".format(idToFocus)
-    print red(cmd)
-    os.popen(cmd)
 
 switchFocused()
