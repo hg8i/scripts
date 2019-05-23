@@ -24,19 +24,27 @@ paths = sys.argv[1:]
 
 # paths = glob.glob(iPattern)
 # print "Reading",paths
+numberOfEventsAll = 0
 for path in paths:
     print "Showing",path
     iFile = h5py.File(path,"r")
     print "\tCat \t#Vars\t#Entries"
+    numberOfEvents = 0
     for cat in iFile.keys():
         varLengths = set([len(iFile[cat][v]) for v in iFile[cat].keys()])
         if len(varLengths)>1:
             lenString = red("Length miss-match: {0}".format(varLengths))
         elif len(varLengths)==1:
-            lenString = green(varLengths.pop())
+            nEvents = varLengths.pop()
+            numberOfEvents+=nEvents
+            lenString = green(nEvents)
         else:
             lenString = "None"
         print "\t{0}\t{1}\t{2}".format(cat,len(iFile[cat]),lenString)
-            
+    print "\tTotal: {0}".format(numberOfEvents)
+    numberOfEventsAll+=numberOfEvents
+print "Total in all files: {0}".format(numberOfEventsAll)
+
+
 
 
