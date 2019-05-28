@@ -105,7 +105,11 @@ class MyStatusIconApp:
             print("No mount")
             return
         print("Unmount", block["name"])
-        run("udisksctl mount -b {0}".format(block["blockPath"]))
+        # trigger udev rule
+        # run("sudo /home/prime/scripts/mountManager/mountusb.sh mount {0}".format(block["name"]))
+        run(r"sudo sudo systemctl start usb-mount@{0}.service".format(block["name"]))
+        # run("sudo udevadm trigger -c add {0}".format(block["blockPath"]))
+        # run("udisksctl mount -b {0}".format(block["blockPath"]))
         self.notify("Drive {0} has mounted".format(block["name"]))
         print("Done")
 
@@ -115,7 +119,10 @@ class MyStatusIconApp:
             print("No unmount")
             return
         print("Unmount", block["name"])
-        run("udisksctl unmount -b {0}".format(block["blockPath"]))
+        # trigger udev rule
+        # run("sudo /home/prime/scripts/mountManager/mountusb.sh unmount {0}".format(block["name"]))
+        run(r"sudo sudo systemctl stop usb-mount@{0}.service".format(block["name"]))
+        # run("udisksctl unmount -b {0}".format(block["blockPath"]))
         self.notify("Drive {0} has unmounted".format(block["name"]))
         # time.sleep(4)
         # run("udisksctl power-off -b {0}".format(block["blockPath"]))
