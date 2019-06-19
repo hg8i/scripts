@@ -2,6 +2,8 @@
 #script for modifying leds!
 #requires permissions for led to be set
 
+# mode can be "on", "off", or "blink"
+
 ledName=${2}
 mode=${1}
 ledPath="/proc/acpi/ibm/led"

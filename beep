@@ -1,0 +1,6 @@
+
+# notify terminal
+echo -ne "\007"
+
+# blink led
+leds.sh blink esc

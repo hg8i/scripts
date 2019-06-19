@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# script for scp-ing from LXPlus
+
+time sshpass -p Writegoodcode!! scp -rp aawhite@lxplus.cern.ch:${1} ${2}
+

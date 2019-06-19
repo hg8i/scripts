@@ -41,6 +41,7 @@ for path in paths:
         else:
             lenString = "None"
         print "\t{0}\t{1}\t{2}".format(cat,len(iFile[cat]),lenString)
+        # print iFile[cat].keys()
     print "\tTotal: {0}".format(numberOfEvents)
     numberOfEventsAll+=numberOfEvents
 print "Total in all files: {0}".format(numberOfEventsAll)

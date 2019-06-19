@@ -222,6 +222,7 @@ class wsManager:
     self.registerScope("l")
     self.registerScope("h")
     self.registerScope("d")
+    self.registerScope("c")
     
 ws=wsManager()
 ws.parseCli(sys.argv[1:])

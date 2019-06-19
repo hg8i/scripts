@@ -39,8 +39,20 @@ def makeVolume():
   volume=percents[0]
   return volume
 
+def makeMute():
+  # return mute state
+  amixer=os.popen("amixer sget Master").read()
+  if "[off]" in amixer: return "mute"
+  return "un-mute"
+
+
+
+
 muteString=""
-if arg=="mute": muteString="Mute Toggled,"
-notifyString="notify-send --expire-time 500 --urgency=normal '{1} Volume: {0}'"
-notifyString=notifyString.format(makeVolume(),muteString)
+if arg=="mute": 
+  msg="State: {0}".format(makeMute())
+else:
+  msg="Volume: {0}".format(makeVolume())
+notifyString="notify-send --expire-time 500 --urgency=normal '{0}'"
+notifyString=notifyString.format(msg)
 os.popen(notifyString)
