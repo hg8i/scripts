@@ -10,5 +10,11 @@
 # With these faults in mind, in 2019 I am trying out vimb, which had
 # been installed for a while anyway
 
-export XDG_CONFIG_HOME=""
-vimb -c /home/prime/.vimbrc
+# export XDG_CONFIG_HOME=""
+
+if [ "$#" -lt 1 ]; then # run with pwd
+    vimb -c ${HOME}/.vimbrc &
+else
+    vimb $1 -c ${HOME}/.vimbrc &
+fi
+
