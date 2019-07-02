@@ -4,10 +4,11 @@ from __future__ import division
 import os, sys, re
 import subprocess 
 from math import log
+from os.path import expanduser
 
 def histToList():
   #histPath="/afs/atlas.umich.edu/home/aaronsw/.bash_history"
-  histPath="/home/prime/.bash_history"
+  histPath=expanduser("~/.bash_history")
   hist=open(histPath,"r").readlines()
   return hist
 
