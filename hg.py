@@ -74,7 +74,8 @@ def exCommandByNumber(hist,writeCommandPath):
   else:
     command=hist[len(hist)-n][1]
     print "Good number, running", command
-    print "#"*20
+    writeCommandPath=expanduser(writeCommandPath)
+    print "#"*20, writeCommandPath
     #save command to pipe file
     f=open(writeCommandPath,"w")
     f.write(command)
@@ -93,7 +94,7 @@ def run(pattern,writeCommandPath):
   while not exCommandByNumber(filteredHist,writeCommandPath):
     pass
 
-if len(sys.argv)<3:
+if len(sys.argv)<2:
   searchFor=""
   maxSearch=90
   writeCommandPath=""

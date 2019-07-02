@@ -6,7 +6,7 @@
 #    $ source hgh ARGS
 
 #warning, overwrite this file
-histfile="/home/prime/.temphgfile"
+histfile="$HOME/.temphgfile"
 rm -f $histfile
 history -a
 
