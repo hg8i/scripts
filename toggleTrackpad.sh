@@ -4,6 +4,7 @@
 # is more reliable than hardcoding the id
 # takes arguement for on/off: 0, 1
 
+echo "Usage: arguement=0 or arguement=1"
 onoff=$1
 
 # find trackpad info line
