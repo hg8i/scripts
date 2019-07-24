@@ -3,3 +3,4 @@
 # script for scp-ing from UMT3
 
 time rsync -rvP --ignore-existing -e "ssh -i $HOME/.ssh/umt" aaronsw@umt3int01.physics.lsa.umich.edu:${1} ${2}
+beep

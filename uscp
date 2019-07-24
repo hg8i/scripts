@@ -3,3 +3,4 @@
 # script for scp-ing from UMT3
 
 time scp -rp -i ~/.ssh/umt aaronsw@umt3int01.physics.lsa.umich.edu:${1} ${2}
+beep
