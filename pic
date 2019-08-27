@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# This script takes a screenshot
+# Syntax: "pic FILE.png", or "pic"
+# Aaron White 2019
+
+
+if [ "$#" -lt 1 ]; then # run with pwd
+    gnome-screenshot -a -f tmp.png
+else
+    # run with pattern
+    gnome-screenshot -a -f $1
+fi
+
+
