@@ -1,0 +1,12 @@
+#!/bin/bash
+
+PASSPHRASE=symmetry
+duplicity --encrypt-key 0D2C94824E5E9D54CD60F690261B3C48981F58D0 --exclude /home/prime/.cache --exclude /home/prime/plotGan /home/prime file:///media/backupVolume/decorum
+
+# to restore, do something like:
+#   PASSPHRASE=symmetry duplicity file:/media/backupVolume/decorum ./abc
+
+# Event on 040919 - deleted edboard latex file: 
+# duplicity restore --file-to-restore latex/edboard-nrOverview-250819 file:/media/backupVolume/decorum ./tmp
+# list stored files:
+# duplicity list-current-files file:/media/backupVolume/decorum/
