@@ -11,6 +11,9 @@
 # sleep 6
 # echo -e 'exit\n' >&${COPROC[1]}
 
+sudo systemctl start bluetooth.service
+rfkill unblock bluetooth
+
 echo -e 'power on\nconnect 28:11:A5:D9:84:B0 \nquit' | bluetoothctl
 
 # get audio source id
