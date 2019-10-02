@@ -28,6 +28,7 @@ numberOfEventsAll = 0
 for path in paths:
     print "Showing",path
     iFile = h5py.File(path,"r")
+    for k in iFile.attrs.keys(): print k,":\t",iFile.attrs[k]
     print "\tCat \t#Vars\t#Entries"
     numberOfEvents = 0
     for cat in iFile.keys():
