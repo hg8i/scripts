@@ -110,7 +110,7 @@ class MyStatusIconApp:
         run(r"sudo sudo systemctl start usb-mount@{0}.service".format(block["name"]))
         # run("sudo udevadm trigger -c add {0}".format(block["blockPath"]))
         # run("udisksctl mount -b {0}".format(block["blockPath"]))
-        self.notify("Drive {0} has mounted".format(block["name"]))
+        # self.notify("Drive {0} has mounted".format(block["name"]))
         print("Done")
 
     def unmount(self,x, block):
@@ -123,7 +123,7 @@ class MyStatusIconApp:
         # run("sudo /home/prime/scripts/mountManager/mountusb.sh unmount {0}".format(block["name"]))
         run(r"sudo sudo systemctl stop usb-mount@{0}.service".format(block["name"]))
         # run("udisksctl unmount -b {0}".format(block["blockPath"]))
-        self.notify("Drive {0} has unmounted".format(block["name"]))
+        # self.notify("Drive {0} has unmounted".format(block["name"]))
         # time.sleep(4)
         # run("udisksctl power-off -b {0}".format(block["blockPath"]))
         print("Done")
@@ -146,15 +146,28 @@ class MyStatusIconApp:
         # make menu
         self.menu = Gtk.Menu()
         self.addMenuLabel(self.menu,"Unmountable drives")
+        # button to unmount all
+        label = Gtk.MenuItem()
+        label.set_label("Unmount all")
+        label.modify_fg(Gtk.StateFlags.NORMAL,self.unmountableColor)
+        label.connect("activate", self.unmountAll, "Unmount all")
+        self.menu.append(label)
+        # buttons to unmount individual drives
         nameFunc = lambda block: "Unmount {0} at {1}".format(block["name"],block["MountPoints"])
         self.makeMenuList(self.menu,nameFunc,self.unmount,self.blockDataMounted,self.unmountableColor)
         self.addMenuLabel(self.menu,"Mountable drives")
+        # buttons to mount individual drives
         nameFunc = lambda block: "Mount {0}".format(block["name"])
         self.makeMenuList(self.menu,nameFunc,self.mount,self.blockDataNotMounted,self.mountableColor)
+
         # add buttons to list
         self.menu.show_all()
         time = Gtk.get_current_event_time()
         self.menu.popup(None, None, None, self.status_icon, 1, time)
+
+    def unmountAll(self):
+        print ("unmount all")
+
 
     def right_click_event(self, icon, button, time):
         """ make popup menu for additional drive info """
