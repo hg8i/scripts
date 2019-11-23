@@ -13,6 +13,3 @@ currentTimeS=$(/usr/bin/date "+%s")
 
 # Save to end of log file in /home/prime/resources/batteryPlot
 echo "${currentTimeS},${percentsList}" >> /home/prime/resources/batteryPlot.txt
-
-
-

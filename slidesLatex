@@ -3,12 +3,13 @@
 
 filename=${1%.*}
 currentDir=$(basename $(pwd))
-myPdfsPath="/home/prime/pdfs/mySlides/"
+myPdfsPath="/home/prime/slides/"
 copyToName=${myPdfsPath}${currentDir}-${filename}.pdf
 copyFromName=${filename}.pdf
 
 #compile pdf
 pdflatex $1
+touch $myPdfsPath
 
 echo "Making copy to slides directory:"
 echo $copyToName

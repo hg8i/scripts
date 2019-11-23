@@ -1,0 +1,4 @@
+#! /bin/bash
+# ssh -o ServerAliveInterval=120 -X -Y -i ~/.ssh/umt aaronsw@141.213.133.228
+ssh -X -Y -i ~/.ssh/umt aaronsw@umt3int02.physics.lsa.umich.edu
+

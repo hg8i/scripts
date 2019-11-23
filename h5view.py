@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from collections import defaultdict
 
 """
 # Script for viewing the inards of hdf5's
@@ -25,6 +26,7 @@ paths = sys.argv[1:]
 # paths = glob.glob(iPattern)
 # print "Reading",paths
 numberOfEventsAll = 0
+numberOfEventsByCat = defaultdict(int)
 for path in paths:
     print "Showing",path
     iFile = h5py.File(path,"r")
@@ -33,6 +35,7 @@ for path in paths:
     numberOfEvents = 0
     for cat in iFile.keys():
         varLengths = set([len(iFile[cat][v]) for v in iFile[cat].keys()])
+        nEvents=0
         if len(varLengths)>1:
             lenString = red("Length miss-match: {0}".format(varLengths))
         elif len(varLengths)==1:
@@ -42,11 +45,13 @@ for path in paths:
         else:
             lenString = "None"
         print "\t{0}\t{1}\t{2}".format(cat,len(iFile[cat]),lenString)
+        numberOfEventsByCat[cat]+=nEvents
         # print iFile[cat].keys()
     print "\tTotal: {0}".format(numberOfEvents)
     numberOfEventsAll+=numberOfEvents
 print "Total in all files: {0}".format(numberOfEventsAll)
-
+for cat in numberOfEventsByCat.keys():
+    print cat, numberOfEventsByCat[cat]
 
 
 
