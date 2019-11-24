@@ -6,6 +6,8 @@ import sys, os, time
 
 
 resourcePath="/home/prime/.clipboard/"
+os.popen("mkdir -p "+resourcePath)
+
 memoryPath=os.path.join(resourcePath,".mem")
 
 def getNextFile():
