@@ -5,7 +5,7 @@ import sys, os, time
 #os.popen("/home/prime/scripts/flashesc");quit()
 
 
-resourcePath="/home/prime/.clipboard/"
+resourcePath="/home/prime/resources/clipboard/"
 os.popen("mkdir -p "+resourcePath)
 
 memoryPath=os.path.join(resourcePath,".mem")
