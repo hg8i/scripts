@@ -16,5 +16,6 @@ fi
 
 #create windows
 for path in $paths; do
-  st -e bash -c "cd $path ; bash" &
+  urxvt -e bash -c "cd $path ; bash" &
+  # st -e bash -c "cd $path ; bash" &
 done
