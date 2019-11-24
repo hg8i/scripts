@@ -1,37 +1,7 @@
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title></title>
-<link rel="stylesheet" type="text/css" href="css/main.css" />
-<!--[if lt IE 9]>
-  <link rel="stylesheet" type="text/css" href="css/ie_8.css" />
-<![endif]-->
-</head>
-<body>
-      	<div id="block_error">
-        <div>
-             	<h2>You broke the website and it's your fault!</h2>
-
-                <p>This website isn't designed for that kind of stuff. Goodbye forever, you shoule be ashamed for yourself and your family.</p>
-                <br>
-                <p>Here's a poem for yeh:</p>
-                <br>
-                <p>Thar once was a man who didn't understand
-                <p>How hard it was to plan a trip to Kazakstan
-                <br>
-                <p>He hired an english major to talk with Larry Page sir
-                <p>About the proper wage sir and Larry Page did answer
-                <br>
-                <p>While Larry he had no advice, a coupon he had for pumpkin spice
-                <p>Latte it was still valid: nice! And cheap coffee did suffice.
-                <br>The end.
-
-
-</p>
-        </div>
-    </div>
-</body>
-</html>
+[Unit]
+Description=Mount USB Drive on %i
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/usr/local/bin/usb-mount.sh add %i
+ExecStop=/usr/local/bin/usb-mount.sh remove %i
