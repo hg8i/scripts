@@ -12,7 +12,7 @@ else
 fi
 
 # COPY FINAL LINE TO XCLIP (if it exists)
-if [ $(command -v xclip) ]; then
+if [ $(command -v xclip) ] && [ $DISPLAY ]; then
     # get final line (most recently modified file)
     mostRecent=$(echo "$result" | tail -n 1 | awk "{print \$9}")
     # remove color formatting (match control sequences)
