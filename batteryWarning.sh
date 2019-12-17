@@ -3,9 +3,11 @@
 # I tried to run this a systemd timer, but had touble getting the notification to pass to the display
 # Instead, this should be run by .i3/conf:
 	# watch -n 300 /home/prime/scripts/batteryWatch.sh
+# If no bettery installed, don't send a notification
+
 
 percents=$(acpi | cut -d "," -f2 | cut -d "%" -f1)
-totalPercent=0
+totalPercent=-1
 chargingStatuses=$(acpi | cut -d "," -f1 | cut -d ":" -f2 | tr -d " ")
 
 # sum battery percents
@@ -25,7 +27,10 @@ done <<< $chargingStatuses
 danger=10
 warning=20
 if [ $isCharging = false ]; then
-	if [ $totalPercent -gt $danger -a $totalPercent -lt $warning ]; then
+	if [ $totalPercent -lt 0 ]; then
+        # no battery installed
+		echo "No battery installed"
+	elif [ $totalPercent -gt $danger -a $totalPercent -lt $warning ]; then
 		echo "Low battery"
 		notify-send "Low battery" --expire-time 2 --urgency=normal "$totalPercent"
 	elif [ $totalPercent -lt $danger ]; then
