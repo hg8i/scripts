@@ -215,7 +215,7 @@ class wsManager:
         # find visible workspace in each display
         visibleWorkspaces = filter(lambda x: x["visible"],workspaces)
         print visibleWorkspaces
-        visibleNames = {v["output"]:v["name"].split("~")[1] for v in visibleWorkspaces}
+        visibleNames = {v["output"]:v["name"].split("~")[1] if "~" in v["name"] else  v["name"]for v in visibleWorkspaces}
         # print visibleNames
 
         #move to scope +1
@@ -230,66 +230,11 @@ class wsManager:
             i3cmd= r"""'[workspace="{}"] move workspace to output "{}"'""".format(name,display)
             self.executeCommand(i3cmd,"")
 
-
-            # name = self.runCommandWithArg("workspace",name,run=1)
-            # move to correct monitor
-            # print "====== moving", name, "to", display
-            # i3cmd= r'"move workspace to output \"{}\""'.format(display)
-            # i3cmd= r'"move workspace to output \"{}\""'.format(display)
-            # i3cmd= r"""'[workspace="{}"] move workspace to output "{}"'""".format(name,display)
-            # print i3cmd
-            # self.executeCommand(i3cmd,"")
-
-
         time.sleep(0.25)
         curScopeName=self.data["scopeList"][self.data["currentScope"]]
         self.notify("Workspace scope: {0}".format(curScopeName))
         name = self.getFullName(focusedName.split("~")[1])
         self.executeCommand("workspace",name)
-
-        # print "#"*50
-        # print name
-        # open("/home/prime/log.txt","w").write(name)
-        # print "#"*50
-
-
-        # open("/home/prime/log.txt","w").write(str(focusedName.split("~")[1]))
-        # import time
-        # time.sleep(0.5)
-        # self.runCommandWithArg("workspace","ana")
-
-        # # restore focus to previous space
-        # self.runCommandWithArg("workspace",focusedName.split("~")[1])
-        # i3cmd= r'"move workspace to output \"{}\""'.format(focusedOutput)
-        # self.executeCommand(i3cmd,"")
-        # print "-"*50
-        # print "restoring", focusedOutput, focusedName, "using", focusedName.split("~")[1]
-        # print "-"*50
-
-
-
-
-    ## ==================================================
-    ## / new features
-    ## ==================================================
-
-    #def decrementScope(self):
-    #    #move to scope -1
-    #    self.data["currentScope"]-=1
-    #    self.data["currentScope"]%=len(self.data["scopeList"])
-    #    print "Current Scope: {0}".format(self.data["currentScope"])
-    #    self.runCommandWithArg("workspace", self.i3wsName)
-    #    curScopeName=self.data["scopeList"][self.data["currentScope"]]
-    #    self.notify("Workspace scope: {0}".format(curScopeName))
-
-    #def incrementScope(self):
-    #    #move to scope +1
-    #    self.data["currentScope"]+=1
-    #    self.data["currentScope"]%=len(self.data["scopeList"])
-    #    print "Current Scope: {0}".format(self.data["currentScope"])
-    #    self.runCommandWithArg("workspace", self.i3wsName)
-    #    curScopeName=self.data["scopeList"][self.data["currentScope"]]
-    #    self.notify("Workspace scope: {0}".format(curScopeName))
 
     def getFullName(self,wsName):
         template="{0}:{1}{3}{2}"
@@ -344,6 +289,9 @@ class wsManager:
         #execute command
         template="i3-msg {0} {1}"
         cmd=template.format(i3cmd,workspace)
+        print "="*50
+        print cmd
+        print "="*50
         os.popen(cmd)
 
     def printData(self):
@@ -382,11 +330,12 @@ class wsManager:
     def savePickle(self):
         #save pickle list 
         pickle.dump(self.data,open(resourcePath,"w"))
+
     def safeLoadPickle(self):
         #requires self.names to be workspaces
         #load data from pickle file
         try: self.data= pickle.load(open(resourcePath,"r"))
-        except: self.data={"scopeList":[""],"currentScope":-1,"currentWorkspace":-1}
+        except: self.data={"scopeList":[""],"currentScope":0,"currentWorkspace":0}
         #correct if scope number too large
         self.data["currentScope"]=min(len(self.data["scopeList"])-1,self.data["currentScope"])
         #correct if scope no longer exists
