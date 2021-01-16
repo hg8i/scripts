@@ -1,0 +1,37 @@
+#!/bin/python2
+import os,sys
+
+def getNameOfNextWorkspaceOnScreen(increment=1):
+    """
+    This is a standalone function that could later be used in
+    the workspace app, but that's for future Aaron
+    """
+    false=0
+    true=1
+    workspaces = os.popen("i3-msg -t get_workspaces").read()
+    # print workspaces
+    try:
+        exec("workspaces ="+workspaces) # is this safe??
+    except:
+        raise BaseException("Some issue with exec'ing i3-msg")
+    # print len(a[0])
+    # get focused output
+    focusedWorkspace = filter(lambda x: x["focused"],workspaces)[0]
+    focusedOutput = focusedWorkspace["output"]
+    focusedName = focusedWorkspace["name"]
+    # get list of workspaces on that screen
+    workspacesOnScreen= [i for i in workspaces if i["output"]==focusedOutput]
+    # find next workspace name
+    workspacesOnScreenNames = [i["name"] for i in workspacesOnScreen]
+    focusedIndex = workspacesOnScreenNames.index(focusedName)
+    nextIndex = (focusedIndex+increment)%len(workspacesOnScreenNames)
+    nextName = workspacesOnScreenNames[nextIndex]
+    return nextName
+
+
+if __name__=="__main__":
+    if len(sys.argv)==2:
+        increment = int(sys.argv[1])
+    else:
+        increment = 1
+    print getNameOfNextWorkspaceOnScreen(increment)

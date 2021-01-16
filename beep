@@ -4,3 +4,6 @@ echo -ne "\007"
 
 # blink led
 leds.sh blink esc
+
+# notify
+notify-send -t 200 beep

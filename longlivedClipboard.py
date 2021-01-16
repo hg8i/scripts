@@ -35,6 +35,7 @@ def copy():
   #sync to primary AND clipboard
   os.popen("cat {0} | xsel --primary".format(clipboardFile))
   os.popen("cat {0} | xsel --clipboard".format(clipboardFile))
+  os.popen("notify-send --urgency=normal -t 300 COPY")
 
 def paste():
   global memoryPath
@@ -44,6 +45,7 @@ def paste():
   os.popen("cat {0} | xsel --clipboard".format(mostRecentPastePath))
   #paste 
   os.popen("xdotool key --clearmodifiers shift+Insert")
+  os.popen("notify-send --urgency=normal -t 300 PASTE")
 
 ##other options for paste functionality:
 ##(these are slower since use keyboard emulation)
@@ -51,6 +53,7 @@ def paste():
 #os.popen('''echo -n "{0}" | xvkbd -xsendevent -file - 2>/dev/null'''.format(whatToPaste))
 #os.popen("xsel | xvkbd -xsendevent -file - 2>/dev/null")
 #os.popen("xdotool type --clearmodifiers "+repr(whatToPaste))
+
   
 def showAll(verbose=False):
   global resourcePath, columns, memoryPath

@@ -8,7 +8,8 @@ copyToName=${myPdfsPath}${currentDir}-${filename}.pdf
 copyFromName=${filename}.pdf
 
 #compile pdf
-pdflatex $1
+lualatex $1
+# pdflatex $1
 touch $myPdfsPath
 
 echo "Making copy to slides directory:"

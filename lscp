@@ -2,6 +2,6 @@
 
 # script for scp-ing from LXPlus
 
-time sshpass -p Makeplotsshowslides! scp -rp aawhite@lxplus.cern.ch:${1} ${2}
+time sshpass -p Makeplotsshowslides!! scp -rp aawhite@lxplus.cern.ch:${1} ${2}
 beep
 

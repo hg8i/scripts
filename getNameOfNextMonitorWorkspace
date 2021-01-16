@@ -1,0 +1,43 @@
+#!/bin/python2
+import os,sys
+
+# [{"id":94636336315568,"num":2,"name":"2:l~ana","visible":false,"focused":false,"rect":{"x":1280,"y":0,"width":1280,"height":1024},"output":"DisplayPort-1","urgent":false},{"id":94636336321984,"num":109,"name":"109:h~9","visible":false,"focused":false,"rect":{"x":1280,"y":0,"width":1280,"height":1024},"output":"DisplayPort-1","urgent":false},{"id":94636336328400,"num":202,"name":"202:d~ana","visible":true,"focused":true,"rect":{"x":1280,"y":0,"width":1280,"height":1001},"output":"DisplayPort-1","urgent":false},{"id":94636336363920,"num":208,"name":"208:d~8","visible":false,"focused":false,"rect":{"x":1280,"y":0,"width":1280,"height":1024},"output":"DisplayPort-1","urgent":false},{"id":94636336386768,"num":302,"name":"302:c~ana","visible":false,"focused":false,"rect":{"x":1280,"y":0,"width":1280,"height":1001},"output":"DisplayPort-1","urgent":false},{"id":94636336393184,"num":308,"name":"308:c~8","visible":false,"focused":false,"rect":{"x":1280,"y":0,"width":1280,"height":1024},"output":"DisplayPort-1","urgent":false},{"id":94636336438592,"num":101,"name":"101:h~web","visible":false,"focused":false,"rect":{"x":0,"y":0,"width":1280,"height":1001},"output":"DisplayPort-2","urgent":false},{"id":94636336445008,"num":201,"name":"201:d~web","visible":true,"focused":false,"rect":{"x":0,"y":0,"width":1280,"height":1001},"output":"DisplayPort-2","urgent":false},{"id":94636336464384,"num":301,"name":"301:c~web","visible":false,"focused":false,"rect":{"x":0,"y":0,"width":1280,"height":1001},"output":"DisplayPort-2","urgent":false},{"id":94636336506304,"num":105,"name":"105:h~pdf","visible":false,"focused":false,"rect":{"x":2560,"y":0,"width":1280,"height":1024},"output":"DisplayPort-0","urgent":false},{"id":94636336512720,"num":203,"name":"203:d~stk","visible":true,"focused":false,"rect":{"x":2560,"y":0,"width":1280,"height":1001},"output":"DisplayPort-0","urgent":false},{"id":94636336519136,"num":205,"name":"205:d~pdf","visible":false,"focused":false,"rect":{"x":2560,"y":0,"width":1280,"height":1024},"output":"DisplayPort-0","urgent":false}]
+
+def getNameOfNextMonitorWorkspace(self,increment=1):
+    """
+    This is a standalone function that could later be used in
+    the workspace app, but that's for future Aaron
+    """
+    false=0
+    true=1
+    workspaces = os.popen("i3-msg -t get_workspaces").read()
+    workspaces = eval(workspaces)
+
+    # get focused display
+    focusedWorkspace = filter(lambda x: x["focused"],workspaces)[0]
+    focusedOutput = focusedWorkspace["output"]
+    focusedName = focusedWorkspace["name"]
+
+    # get sorted list of displays from xrandr
+    displayInfoRaw = filter(lambda x: "connected" in x,os.popen("xrandr -q").readlines())
+    displayInfoRaw = [x.replace("primary","") for x in displayInfoRaw]
+    displayInfo = {i.split()[0]:int(i.split()[2].split("+")[1]) for i in displayInfoRaw if "disconnected" not in i}
+    displayNamesInOrder = sorted(displayInfo.keys(),key=lambda x: displayInfo[x],reverse=0)
+
+    # increment to next output
+    focusedOutputIndex = displayNamesInOrder.index(focusedOutput)
+    nextOutputIndex = (focusedOutputIndex+increment)%len(displayNamesInOrder)
+    nextOutput = displayNamesInOrder[nextOutputIndex]
+
+    # find visible workspace in new output
+    visibleWorkspace = filter(lambda x: x["visible"] and x["output"]==nextOutput,workspaces)[0]
+    visibleWorkspace = visibleWorkspace["name"]
+    return visibleWorkspace
+
+if __name__=="__main__":
+    if len(sys.argv)==2:
+        increment = int(sys.argv[1])
+    else:
+        increment = 1
+    print getNameOfNextMonitorWorkspace(increment)
+

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+rm -rf ~/overleaf
+mkdir ~/overleaf
+cd ~/overleaf
+
+git clone $1
+mv */.git ./
+
+cd -
+cp -r * ~/overleaf
+
+cd ~/overleaf
+mv thesis.tex main.tex
+rm thesis*
+git add .
+git commit -m init
+git push
+
+cd -
+echo "Copied and uploaded to overleaf"
+

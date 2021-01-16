@@ -14,9 +14,13 @@ def getTemp():
     """ get temperatuire """
     f= os.popen("sensors -j").readlines()
     f = json.load(os.popen("sensors -j"))
-    t1 = f["pch_skylake-virtual-0"]["temp1"]["temp1_input"]
-    t2 = f["coretemp-isa-0000"]["Package id 0"]["temp1_input"]
-    return "{0:.1f}".format((t1+t2)/2)
+    temps= [f[u"coretemp-isa-0000"]["Core {0}".format(i)]["temp{0}_input".format(i+2)] for i in range(8)]
+    temp=sum(temps)/len(temps)
+    return "{0:.1f}".format(temp)
+
+    # t1 = f["pch_skylake-virtual-0"]["temp1"]["temp1_input"]
+    # t2 = f["coretemp-isa-0000"]["Package id 0"]["temp1_input"]
+    # return "{0:.1f}".format((t1+t2)/2)
 
 
 # 0403:6001

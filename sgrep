@@ -1,0 +1,27 @@
+#! /bin/env python2
+# clipboard orientated wrapper for grep
+
+import os,sys
+import re
+args=sys.argv[1:]
+if len(args)==1:
+    args.append(" ./* ")
+args = [r if " " not in r else '"'+r+'"' for r in args]
+args=" ".join(args)
+# print args
+
+cmd = "grep -i --color=always {}".format(args)
+d = os.popen(cmd).readlines()
+print "".join(d),
+if len(d)==0:
+    print "None found"; quit()
+
+name = d[-1].split(":")[0]
+name = name.replace("\x1b[35m","")
+name = name.replace("\x1b[36m","")
+name = name.replace("\x1b[m","")
+name = name.replace("\x1b[K","")
+
+os.popen("echo -n {} | xsel --primary".format(name.strip()))
+print "Last name copied to clipboard"
+# print cmd

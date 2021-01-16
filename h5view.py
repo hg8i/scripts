@@ -19,9 +19,15 @@ def green(*string):
     ret = "\033[32m{0}\033[39m".format(" ".join(string))
     return ret
 
+if "-w" in sys.argv:
+    sumName = sys.argv[2]
+    paths = sys.argv[3:]
+else: 
+    sumName = None
+    paths = sys.argv[1:]
 
-paths = sys.argv[1:]
 # print "Reading", iPattern
+
 
 # paths = glob.glob(iPattern)
 # print "Reading",paths
@@ -31,7 +37,7 @@ for path in paths:
     print "Showing",path
     iFile = h5py.File(path,"r")
     for k in iFile.attrs.keys(): print k,":\t",iFile.attrs[k]
-    print "\tCat \t#Vars\t#Entries"
+    print "\tCat \t#Vars\t#{}".format(sumName if sumName else "Entries")
     numberOfEvents = 0
     for cat in iFile.keys():
         varLengths = set([len(iFile[cat][v]) for v in iFile[cat].keys()])
@@ -44,14 +50,20 @@ for path in paths:
             lenString = green(nEvents)
         else:
             lenString = "None"
+        # if summing up weights, replace lenString with sum
+        if sumName!=None:
+            lenString=sum(iFile[cat][sumName])
+            nEvents=float(lenString)
         print "\t{0}\t{1}\t{2}".format(cat,len(iFile[cat]),lenString)
         numberOfEventsByCat[cat]+=nEvents
         # print iFile[cat].keys()
     print "\tTotal: {0}".format(numberOfEvents)
     numberOfEventsAll+=numberOfEvents
-print "Total in all files: {0}".format(numberOfEventsAll)
+
+print "="*50
+print green("Total in all files: {0}".format(numberOfEventsAll))
 for cat in numberOfEventsByCat.keys():
-    print cat, numberOfEventsByCat[cat]
+    print green(cat, numberOfEventsByCat[cat])
 
 
 
