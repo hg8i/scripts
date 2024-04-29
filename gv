@@ -1,0 +1,54 @@
+#!/bin/env python3
+
+import sys,os
+from subprocess import call
+
+def edit(path):
+    EDITOR = os.environ.get("EDITOR","vim")
+    print("Editing",repr(path))
+    code = call([EDITOR, path])
+
+def yellow(*string):
+    """ return string as red """
+    string = [str(s) for s in string]
+    ret = "\033[33m{0}\033[39m".format(" ".join(string))
+    return ret
+
+def red(*string):
+    """ return string as red """
+    string = [str(s) for s in string]
+    ret = "\033[31m{0}\033[39m".format(" ".join(string))
+    return ret
+
+def green(*string):
+    """ return string as green """
+    string = [str(s) for s in string]
+    ret = "\033[32m{0}\033[39m".format(" ".join(string))
+    return ret
+
+grepline = " ".join(sys.argv[1:])
+cmd = f"grep --exclude='*.aux' --exclude='*.toc' '{grepline}' * -ri --files-with-matches"
+result = os.popen(cmd).readlines()
+
+# No matches
+if len(result)==0:
+    print("No matches")
+    print(cmd)
+# One match -> edit file
+elif len(result)==1:
+    edit(result[0].rstrip())
+# Multiple matches
+else:
+    cmd = f"grep  --exclude='*.toc' --exclude='*.aux' '{grepline}' * -ri"
+    result = os.popen(cmd).readlines()
+    result = [r.rstrip() for r in result]
+    for i,r in enumerate(result):
+        path = r.split(":")[0]
+        line = r.split(path)[1]
+        # add colors
+        line = line.replace(grepline,red(grepline))
+        print(green(str(i).ljust(3)),yellow(path),line)
+    target = input("Enter number to edit: ")
+    path = result[int(target)].split(":")[0]
+    edit(path)
+

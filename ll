@@ -1,15 +1,30 @@
 #!/bin/bash
 # Fancy ls, only print size, date, and name
 #Aaron White, 2017
+#Updated Jan 2024 to handle spaces in file names
 
 result=$(/bin/ls ${@} --color=always -lrth)
+first_word="${result%% *}"
 
-# PRINTOUT LINES IN NICE PRESENTATION
-if [ $(echo "$result" | wc -l) -eq 1 ]; then
-  echo "$result" | awk "{print \$5 \"\\t\" \$6 \$7 \" \" \$8 \"\\t\" \$9}"
+# echo ${@}
+# echo ${#}
+# echo "--------------------------------------------------"
+# /bin/ls ${@} --color=always -lrthq
+# echo "--------------------------------------------------"
+# echo "First:" $first_word
+# echo "--------------------------------------------------"
+
+
+# if [ ${#} -lt 2 ]; then
+if [ "$first_word" == "" -o  "$first_word" == "total" ]; then
+    echo "$result" | tail -n +2 | awk '{printf "%s\t%s %s\t%s ",$5,$6,$7,$8; for(i=9; i<NF+1; i++) printf "%s%s",$i,(i<NF ? "\\ " : RS)}'
 else 
-  echo "$result" | tail -n +1 | awk '{printf "%s\t%s %s\t%s ",$5,$6,$7,$8; for(i=9; i<NF+1; i++) printf "%s%s",$i,(i<NF ? "\\ " : RS)}'
+    # echo $result
+    # echo "$result" | head -n +1
+    # tail cuts off the "total" line
+    echo "$result" | awk '{printf "%s\t%s %s\t%s ",$5,$6,$7,$8; for(i=9; i<NF+1; i++) printf "%s%s",$i,(i<NF ? "\\ " : RS)}'
 fi
+
 
 # COPY FINAL LINE TO XCLIP (if it exists)
 if [ $(command -v xclip) ] && [ $DISPLAY ]; then

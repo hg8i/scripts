@@ -38,5 +38,12 @@ for dirpath, dirnames, filenames in os.walk("figures"):
             # print "Delete"
             nSave+=1
 
+# remove empty directories in figures/
+for d in glob.glob("figures/*"):
+    l = len(glob.glob(d+"/*"))
+    if l==0:
+        os.rmdir(d)
+
+
 print "N Delete", nDel
 print "N Save", nSave

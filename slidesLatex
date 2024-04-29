@@ -8,7 +8,7 @@ copyToName=${myPdfsPath}${currentDir}-${filename}.pdf
 copyFromName=${filename}.pdf
 
 #compile pdf
-lualatex $1
+lualatex --interaction nonstopmode $1
 # pdflatex $1
 touch $myPdfsPath
 

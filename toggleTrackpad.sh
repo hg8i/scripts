@@ -12,7 +12,7 @@ else
 fi
 
 # find trackpad info line
-line=$(xinput -list | grep TouchPad)
+line=$(xinput -list | grep Synaptics)
 # find trackpad id
 id=-1
 for word in $line; do
